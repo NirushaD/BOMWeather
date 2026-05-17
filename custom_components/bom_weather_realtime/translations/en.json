@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "BOM realtime weather station",
+        "description": "Create realtime weather and sensor entities from the Bureau of Meteorology 72-hour station JSON feed. Enter the station WMO number from the BOM observations table for your state/territory.",
+        "data": {
+          "state": "State or territory feed",
+          "wmo": "Station WMO number",
+          "station_name": "Station name override"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to fetch observation data for this BOM station. Check the selected state/territory feed and WMO number."
+    },
+    "abort": {
+      "already_configured": "This BOM station is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "air_temperature": { "name": "Air temperature" },
+      "apparent_temperature": { "name": "Apparent temperature" },
+      "dew_point": { "name": "Dew point" },
+      "relative_humidity": { "name": "Relative humidity" },
+      "mean_sea_level_pressure": { "name": "Mean sea level pressure" },
+      "wind_speed": { "name": "Wind speed" },
+      "wind_gust": { "name": "Wind gust" },
+      "wind_direction": { "name": "Wind direction" },
+      "rain_since_9am": { "name": "Rain since 9am" },
+      "rain_last_10_minutes": { "name": "Rain last 10 minutes" },
+      "visibility": { "name": "Visibility" }
+    }
+  }
+}
