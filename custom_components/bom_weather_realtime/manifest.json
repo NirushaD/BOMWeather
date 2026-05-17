@@ -1,0 +1,12 @@
+{
+  "domain": "bom_weather_realtime",
+  "name": "BOM Realtime Weather",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://reg.bom.gov.au/catalogue/data-feeds.shtml",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/custom-components/bom_weather_realtime/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
