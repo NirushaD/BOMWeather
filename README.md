@@ -6,13 +6,13 @@ Meteorology real-time observation JSON feeds.
 The integration uses BOM feed URLs in this form:
 
 ```text
-https://www.bom.gov.au/fwo/<product_id>/<product_id>.<station_id>.json
+https://reg.bom.gov.au/fwo/<product_id>/<product_id>.<station_id>.json
 ```
 
 Example:
 
 ```text
-https://www.bom.gov.au/fwo/IDN60801/IDN60801.94768.json
+https://reg.bom.gov.au/fwo/IDN60801/IDN60801.94768.json
 ```
 
 ## Install

@@ -7,7 +7,14 @@ from typing import Any
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 
-DEFAULT_BASE_URL = "https://www.bom.gov.au/fwo"
+DEFAULT_BASE_URL = "https://reg.bom.gov.au/fwo"
+REQUEST_HEADERS = {
+    "Accept": "application/json,text/plain,*/*",
+    "User-Agent": (
+        "HomeAssistant-BOMWeather/0.1 "
+        "(+https://github.com/NirushaD/BOMWeather)"
+    ),
+}
 
 
 class BOMWeatherError(Exception):
@@ -54,7 +61,11 @@ class BOMWeatherClient:
     async def async_get_latest_observation(self) -> BOMObservation:
         """Fetch and return the newest observation from the feed."""
         try:
-            async with self._session.get(self.source_url, timeout=20) as response:
+            async with self._session.get(
+                self.source_url,
+                headers=REQUEST_HEADERS,
+                timeout=20,
+            ) as response:
                 response.raise_for_status()
                 payload = await response.json(content_type=None)
         except ClientResponseError as err:
