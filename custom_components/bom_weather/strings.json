@@ -1,0 +1,23 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "BOM Weather",
+        "description": "Create a weather entity from a Bureau of Meteorology real-time observation JSON feed.",
+        "data": {
+          "name": "Name",
+          "product_id": "BOM product ID",
+          "station_id": "BOM station ID",
+          "scan_interval": "Update interval in minutes"
+        }
+      }
+    },
+    "error": {
+      "invalid_product": "Use a BOM product ID like IDN60801.",
+      "invalid_station": "Use the five digit BOM station or WMO ID."
+    },
+    "abort": {
+      "already_configured": "This BOM product and station are already configured."
+    }
+  }
+}

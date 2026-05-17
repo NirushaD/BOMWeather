@@ -1,0 +1,10 @@
+{
+  "domain": "bom_weather",
+  "name": "BOM Weather",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://reg.bom.gov.au/catalogue/data-feeds.shtml",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0"
+}
