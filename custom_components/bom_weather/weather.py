@@ -102,12 +102,19 @@ class BOMWeatherEntity(CoordinatorEntity[BOMWeatherCoordinator], WeatherEntity):
         for source in (weather, cloud):
             condition = _condition_from_text(source)
             if condition:
+                if condition == "sunny" and _is_night(
+                    data.get("local_date_time_full")
+                ):
+                    return "clear-night"
                 return condition
 
         wind_kmh = _as_float(data.get("wind_spd_kmh"))
         gust_kmh = _as_float(data.get("gust_kmh"))
         if (wind_kmh and wind_kmh >= 40) or (gust_kmh and gust_kmh >= 60):
             return "windy"
+
+        if _is_night(data.get("local_date_time_full")):
+            return "clear-night"
 
         return "sunny"
 
@@ -213,6 +220,18 @@ def _as_text(value: Any) -> str | None:
     if value in (None, "", "-"):
         return None
     return str(value).strip()
+
+
+def _is_night(value: Any) -> bool:
+    """Return true when the BOM local observation time is at night."""
+    text = _as_text(value)
+    if not text:
+        return False
+    try:
+        hour = datetime.strptime(text, "%Y%m%d%H%M%S").hour
+    except ValueError:
+        return False
+    return hour >= 18 or hour < 6
 
 
 def _bom_utc_to_iso(value: Any) -> str | None:
