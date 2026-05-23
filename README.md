@@ -24,6 +24,13 @@ https://reg.bom.gov.au/fwo/IDN60801/IDN60801.94768.json
 4. Search for **BOM Weather**.
 5. Enter the BOM product ID and five digit station/WMO ID.
 
+## Integration icon
+
+The integration includes local Home Assistant brand assets in
+`custom_components/bom_weather/brand`. Home Assistant 2026.3 and newer will use
+these files for the integration icon and logo after Home Assistant is restarted.
+If the integration still shows a placeholder icon, refresh your browser cache.
+
 ## Finding BOM product and station IDs
 
 BOM documents its public data feeds here:
@@ -32,6 +39,20 @@ https://reg.bom.gov.au/catalogue/data-feeds.shtml
 
 Observation products are grouped by state or territory. Use the matching product
 ID and a five digit station/WMO ID from the table below.
+
+Do not use the station number shown in the **Station Details** line on BOM's
+station page. That is a separate BOM station identifier, often an 8-series or
+zero-prefixed number, and it is not the JSON feed ID. For this integration, use
+the five digit ID in the page URL or in the **Other formats** JSON link.
+
+For example, the Point Cook page shows `ID: 087185` in **Station Details**, but
+the JSON feed link is:
+
+```text
+https://reg.bom.gov.au/fwo/IDV60801/IDV60801.95941.json
+```
+
+For Point Cook, enter product ID `IDV60801` and station/WMO ID `95941`.
 
 This list was generated from the BOM public observation pages on 17 May 2026.
 BOM can add, remove, or move stations without notice, especially portable
