@@ -28,6 +28,25 @@ https://reg.bom.gov.au/fwo/IDN60801/IDN60801.94768.json
 4. Search for **BOM Weather**.
 5. Enter the BOM product ID and five digit station/WMO ID.
 
+## Install with HACS
+
+Until this repository is added to the default HACS list, install it as a custom
+repository:
+
+1. In Home Assistant, go to **HACS**.
+2. Open the three-dot menu and select **Custom repositories**.
+3. Add this repository URL:
+
+   ```text
+   https://github.com/NirushaD/BOMWeather
+   ```
+
+4. Select **Integration** as the category.
+5. Install **BOM Weather** from HACS.
+6. Restart Home Assistant.
+7. Go to **Settings > Devices & services > Add integration** and search for
+   **BOM Weather**.
+
 ## Integration icon
 
 The integration includes local Home Assistant brand assets in
