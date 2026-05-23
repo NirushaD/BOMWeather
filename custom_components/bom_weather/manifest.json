@@ -1,9 +1,9 @@
 {
   "domain": "bom_weather",
   "name": "BOM Weather",
-  "codeowners": [],
+  "codeowners": ["@NirushaD"],
   "config_flow": true,
-  "documentation": "https://reg.bom.gov.au/catalogue/data-feeds.shtml",
+  "documentation": "https://github.com/NirushaD/BOMWeather",
   "issue_tracker": "https://github.com/NirushaD/BOMWeather/issues",
   "iot_class": "cloud_polling",
   "requirements": [],
