@@ -17,6 +17,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers import sun as sun_helper
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import CONF_PRODUCT_ID, CONF_STATION_ID, DOMAIN
@@ -102,9 +103,7 @@ class BOMWeatherEntity(CoordinatorEntity[BOMWeatherCoordinator], WeatherEntity):
         for source in (weather, cloud):
             condition = _condition_from_text(source)
             if condition:
-                if condition == "sunny" and _is_night(
-                    data.get("local_date_time_full")
-                ):
+                if condition == "sunny" and not self._is_sun_up(data):
                     return "clear-night"
                 return condition
 
@@ -113,10 +112,18 @@ class BOMWeatherEntity(CoordinatorEntity[BOMWeatherCoordinator], WeatherEntity):
         if (wind_kmh and wind_kmh >= 40) or (gust_kmh and gust_kmh >= 60):
             return "windy"
 
-        if _is_night(data.get("local_date_time_full")):
+        if not self._is_sun_up(data):
             return "clear-night"
 
         return "sunny"
+
+    def _is_sun_up(self, data: dict[str, Any]) -> bool:
+        """Return whether the sun is up at the observation time."""
+        observation_time = _bom_utc_to_datetime(data.get("aifstime_utc"))
+        try:
+            return sun_helper.is_up(self.hass, observation_time)
+        except (AttributeError, ValueError):
+            return not _is_night_by_hour(data.get("local_date_time_full"))
 
     @property
     def native_temperature(self) -> float | None:
@@ -222,8 +229,8 @@ def _as_text(value: Any) -> str | None:
     return str(value).strip()
 
 
-def _is_night(value: Any) -> bool:
-    """Return true when the BOM local observation time is at night."""
+def _is_night_by_hour(value: Any) -> bool:
+    """Return true when the BOM local observation hour is at night."""
     text = _as_text(value)
     if not text:
         return False
@@ -234,16 +241,24 @@ def _is_night(value: Any) -> bool:
     return hour >= 18 or hour < 6
 
 
-def _bom_utc_to_iso(value: Any) -> str | None:
-    """Convert BOM UTC timestamp format to ISO 8601."""
+def _bom_utc_to_datetime(value: Any) -> datetime | None:
+    """Convert BOM UTC timestamp format to an aware datetime."""
     text = _as_text(value)
     if not text:
         return None
     try:
-        return (
-            datetime.strptime(text, "%Y%m%d%H%M%S")
-            .replace(tzinfo=timezone.utc)
-            .isoformat()
-        )
+        return datetime.strptime(text, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
     except ValueError:
-        return text
+        return None
+
+
+def _bom_utc_to_iso(value: Any) -> str | None:
+    """Convert BOM UTC timestamp format to ISO 8601."""
+    parsed = _bom_utc_to_datetime(value)
+    if parsed is not None:
+        return parsed.isoformat()
+
+    text = _as_text(value)
+    if text is None:
+        return None
+    return text

@@ -3,6 +3,10 @@
 Custom Home Assistant integration that creates a `weather` entity from Bureau of
 Meteorology real-time observation JSON feeds.
 
+Current version: `0.2.1`
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
+
 The integration uses BOM feed URLs in this form:
 
 ```text
