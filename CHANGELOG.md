@@ -8,6 +8,17 @@ This project uses semantic versioning where practical:
 - Minor version: new features or visible behavior changes.
 - Patch version: bug fixes and documentation-only updates.
 
+## 0.5.2 - 2026-05-24
+
+### Fixed
+
+- Switched BOM observation discovery to `reg.bom.gov.au` to match the working
+  BOM feed host used by the integration.
+- Allowed observation station dropdowns to load even when forecast area
+  discovery is temporarily unavailable.
+- Added Home Assistant warning logs for BOM discovery failures so connection
+  issues show the actual failing endpoint.
+
 ## 0.5.1 - 2026-05-24
 
 ### Fixed

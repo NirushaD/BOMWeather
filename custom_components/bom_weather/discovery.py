@@ -12,14 +12,14 @@ from aiohttp import ClientError, ClientResponseError, ClientSession
 from .api import DEFAULT_BASE_URL, REQUEST_HEADERS
 
 OBSERVATION_REGIONS: dict[str, tuple[str, str]] = {
-    "ACT": ("ACT - Canberra area", "https://www.bom.gov.au/act/observations/canberra.shtml"),
-    "NSW": ("NSW", "https://www.bom.gov.au/nsw/observations/nswall.shtml"),
-    "NT": ("NT", "https://www.bom.gov.au/nt/observations/ntall.shtml"),
-    "QLD": ("QLD", "https://www.bom.gov.au/qld/observations/qldall.shtml"),
-    "SA": ("SA", "https://www.bom.gov.au/sa/observations/saall.shtml"),
-    "TAS": ("TAS", "https://www.bom.gov.au/tas/observations/tasall.shtml"),
-    "VIC": ("VIC", "https://www.bom.gov.au/vic/observations/vicall.shtml"),
-    "WA": ("WA", "https://www.bom.gov.au/wa/observations/waall.shtml"),
+    "ACT": ("ACT - Canberra area", "https://reg.bom.gov.au/act/observations/canberra.shtml"),
+    "NSW": ("NSW", "https://reg.bom.gov.au/nsw/observations/nswall.shtml"),
+    "NT": ("NT", "https://reg.bom.gov.au/nt/observations/ntall.shtml"),
+    "QLD": ("QLD", "https://reg.bom.gov.au/qld/observations/qldall.shtml"),
+    "SA": ("SA", "https://reg.bom.gov.au/sa/observations/saall.shtml"),
+    "TAS": ("TAS", "https://reg.bom.gov.au/tas/observations/tasall.shtml"),
+    "VIC": ("VIC", "https://reg.bom.gov.au/vic/observations/vicall.shtml"),
+    "WA": ("WA", "https://reg.bom.gov.au/wa/observations/waall.shtml"),
 }
 
 FORECAST_PRODUCTS: dict[str, str] = {

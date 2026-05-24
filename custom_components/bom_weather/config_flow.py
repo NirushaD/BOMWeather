@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import Any
 
@@ -38,6 +39,7 @@ from .discovery import (
 
 PRODUCT_RE = re.compile(r"^ID[A-Z]\d{5}$")
 STATION_RE = re.compile(r"^\d{5}$")
+_LOGGER = logging.getLogger(__name__)
 
 
 def _schema(user_input: dict[str, Any] | None = None) -> vol.Schema:
@@ -284,12 +286,18 @@ class BOMWeatherOptionsFlow(OptionsFlowWithReload):
                 },
             )
 
+        session = async_get_clientsession(self.hass)
         try:
-            session = async_get_clientsession(self.hass)
             stations = await async_get_observation_stations(session, self._region)
-            forecast_areas = await async_get_forecast_areas(session, self._region)
-        except BOMDiscoveryError:
+        except BOMDiscoveryError as err:
+            _LOGGER.warning("BOM observation discovery failed: %s", err)
             return await self.async_step_manual()
+
+        try:
+            forecast_areas = await async_get_forecast_areas(session, self._region)
+        except BOMDiscoveryError as err:
+            _LOGGER.warning("BOM forecast discovery failed: %s", err)
+            forecast_areas = []
 
         station_options = {
             station.option_value: station.option_label for station in stations
