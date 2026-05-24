@@ -8,6 +8,14 @@ This project uses semantic versioning where practical:
 - Minor version: new features or visible behavior changes.
 - Patch version: bug fixes and documentation-only updates.
 
+## 0.5.1 - 2026-05-24
+
+### Fixed
+
+- Fixed Configure/options flow startup on recent Home Assistant versions by
+  using Home Assistant's managed `config_entry` property and automatic reload
+  options flow.
+
 ## 0.5.0 - 2026-05-24
 
 ### Added

@@ -8,7 +8,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.config_entries import ConfigEntry, OptionsFlowWithReload
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -196,7 +196,7 @@ class BOMWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     def async_get_options_flow(config_entry: ConfigEntry) -> BOMWeatherOptionsFlow:
         """Create the options flow."""
-        return BOMWeatherOptionsFlow(config_entry)
+        return BOMWeatherOptionsFlow()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -236,15 +236,8 @@ class BOMWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
 
-class BOMWeatherOptionsFlow(config_entries.OptionsFlow):
+class BOMWeatherOptionsFlow(OptionsFlowWithReload):
     """Handle BOM Weather options."""
-
-    def __init__(self, config_entry: ConfigEntry) -> None:
-        """Initialise options flow."""
-        self.config_entry = config_entry
-        self._region = infer_region(
-            entry_value(config_entry, CONF_PRODUCT_ID, DEFAULT_PRODUCT_ID)
-        )
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -256,7 +249,15 @@ class BOMWeatherOptionsFlow(config_entries.OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=_region_schema(self._region),
+            data_schema=_region_schema(
+                infer_region(
+                    entry_value(
+                        self.config_entry,
+                        CONF_PRODUCT_ID,
+                        DEFAULT_PRODUCT_ID,
+                    )
+                )
+            ),
         )
 
     async def async_step_location(
