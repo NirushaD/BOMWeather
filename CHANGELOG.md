@@ -8,6 +8,15 @@ This project uses semantic versioning where practical:
 - Minor version: new features or visible behavior changes.
 - Patch version: bug fixes and documentation-only updates.
 
+## 0.3.0 - 2026-05-24
+
+### Added
+
+- Added optional daily forecast support using BOM précis forecast XML products.
+- Added setup fields for BOM forecast product ID and forecast area.
+- Added Home Assistant `FORECAST_DAILY` support when forecast settings are
+  configured.
+
 ## 0.2.1 - 2026-05-23
 
 ### Changed

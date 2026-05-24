@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from homeassistant.components.weather import WeatherEntity
+from homeassistant.components.weather import Forecast, WeatherEntity, WeatherEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
@@ -72,6 +72,8 @@ class BOMWeatherEntity(CoordinatorEntity[BOMWeatherCoordinator], WeatherEntity):
         self._attr_unique_id = (
             f"{entry.data[CONF_PRODUCT_ID]}_{entry.data[CONF_STATION_ID]}_weather"
         )
+        if coordinator.data and coordinator.data.forecasts:
+            self._attr_supported_features = WeatherEntityFeature.FORECAST_DAILY
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -197,7 +199,14 @@ class BOMWeatherEntity(CoordinatorEntity[BOMWeatherCoordinator], WeatherEntity):
             "weather": data.get("weather"),
             "rain_since_9am_mm": _as_float(data.get("rain_trace")),
             "source_url": self.coordinator.data.source_url,
+            "forecast_source_url": self.coordinator.data.forecast_source_url,
         }
+
+    async def async_forecast_daily(self) -> list[Forecast] | None:
+        """Return the daily forecast in native units."""
+        if not self.coordinator.data or not self.coordinator.data.forecasts:
+            return None
+        return self.coordinator.data.forecasts
 
 
 def _condition_from_text(value: str | None) -> str | None:

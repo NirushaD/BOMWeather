@@ -3,7 +3,7 @@
 Custom Home Assistant integration that creates a `weather` entity from Bureau of
 Meteorology real-time observation JSON feeds.
 
-Current version: `0.2.1`
+Current version: `0.3.0`
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
 
@@ -27,6 +27,9 @@ https://reg.bom.gov.au/fwo/IDN60801/IDN60801.94768.json
 3. Go to **Settings > Devices & services > Add integration**.
 4. Search for **BOM Weather**.
 5. Enter the BOM product ID and five digit station/WMO ID.
+6. To enable daily forecasts, enter the BOM forecast product ID and forecast
+   area. For example, Victoria uses forecast product `IDV10753`, and the
+   forecast area can be `Melbourne`.
 
 ## Install with HACS
 
@@ -53,6 +56,26 @@ The integration includes local Home Assistant brand assets in
 `custom_components/bom_weather/brand`. Home Assistant 2026.3 and newer will use
 these files for the integration icon and logo after Home Assistant is restarted.
 If the integration still shows a placeholder icon, refresh your browser cache.
+
+## Daily forecasts
+
+Daily forecast support uses BOM précis forecast XML products. These are separate
+from the observation station feeds, so forecast settings are configured
+separately during integration setup.
+
+Use the forecast product ID for your state or territory, then enter the forecast
+area name as it appears in the BOM XML product. The area can also be the BOM AAC
+code, such as `VIC_PT042`.
+
+| Region | Forecast product ID | Example forecast area |
+| --- | --- | --- |
+| ACT/NSW | `IDN11060` | Canberra, Sydney |
+| NT | `IDD10207` | Darwin |
+| QLD | `IDQ11295` | Brisbane |
+| SA | `IDS10044` | Adelaide |
+| TAS | `IDT16710` | Hobart |
+| VIC | `IDV10753` | Melbourne |
+| WA | `IDW14199` | Perth |
 
 ## Finding BOM product and station IDs
 
@@ -106,3 +129,5 @@ stations. If a station stops working, check the current BOM observation pages:
 The weather entity exposes current temperature, apparent temperature, dew point,
 humidity, pressure, wind speed, wind bearing, condition, and additional BOM
 attributes such as rain since 9am, gust speed, observation time, and source URL.
+If forecast settings are configured, the entity also exposes Home Assistant daily
+weather forecasts from BOM précis forecast XML products.

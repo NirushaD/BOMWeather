@@ -12,8 +12,12 @@ from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
     CONF_PRODUCT_ID,
+    CONF_FORECAST_AREA,
+    CONF_FORECAST_PRODUCT_ID,
     CONF_SCAN_INTERVAL,
     CONF_STATION_ID,
+    DEFAULT_FORECAST_AREA,
+    DEFAULT_FORECAST_PRODUCT_ID,
     DEFAULT_NAME,
     DEFAULT_PRODUCT_ID,
     DEFAULT_SCAN_INTERVAL,
@@ -36,6 +40,17 @@ def _schema(user_input: dict[str, Any] | None = None) -> vol.Schema:
             ): str,
             vol.Required(CONF_STATION_ID, default=user_input.get(CONF_STATION_ID, "")): str,
             vol.Optional(
+                CONF_FORECAST_PRODUCT_ID,
+                default=user_input.get(
+                    CONF_FORECAST_PRODUCT_ID,
+                    DEFAULT_FORECAST_PRODUCT_ID,
+                ),
+            ): str,
+            vol.Optional(
+                CONF_FORECAST_AREA,
+                default=user_input.get(CONF_FORECAST_AREA, DEFAULT_FORECAST_AREA),
+            ): str,
+            vol.Optional(
                 CONF_SCAN_INTERVAL,
                 default=user_input.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
             ): vol.All(vol.Coerce(int), vol.Range(min=5, max=120)),
@@ -57,12 +72,20 @@ class BOMWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             product_id = user_input[CONF_PRODUCT_ID].strip().upper()
             station_id = user_input[CONF_STATION_ID].strip()
+            forecast_product_id = user_input[CONF_FORECAST_PRODUCT_ID].strip().upper()
+            forecast_area = user_input[CONF_FORECAST_AREA].strip()
             name = user_input["name"].strip() or DEFAULT_NAME
 
             if not PRODUCT_RE.match(product_id):
                 errors[CONF_PRODUCT_ID] = "invalid_product"
             if not STATION_RE.match(station_id):
                 errors[CONF_STATION_ID] = "invalid_station"
+            if forecast_product_id and not PRODUCT_RE.match(forecast_product_id):
+                errors[CONF_FORECAST_PRODUCT_ID] = "invalid_product"
+            if forecast_product_id and not forecast_area:
+                errors[CONF_FORECAST_AREA] = "forecast_area_required"
+            if forecast_area and not forecast_product_id:
+                errors[CONF_FORECAST_PRODUCT_ID] = "forecast_product_required"
 
             if not errors:
                 await self.async_set_unique_id(f"{product_id}_{station_id}")
@@ -74,6 +97,8 @@ class BOMWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "name": name,
                         CONF_PRODUCT_ID: product_id,
                         CONF_STATION_ID: station_id,
+                        CONF_FORECAST_PRODUCT_ID: forecast_product_id,
+                        CONF_FORECAST_AREA: forecast_area,
                         CONF_SCAN_INTERVAL: user_input[CONF_SCAN_INTERVAL],
                     },
                 )
@@ -82,6 +107,8 @@ class BOMWeatherConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 **user_input,
                 CONF_PRODUCT_ID: product_id,
                 CONF_STATION_ID: station_id,
+                CONF_FORECAST_PRODUCT_ID: forecast_product_id,
+                CONF_FORECAST_AREA: forecast_area,
                 "name": name,
             }
 

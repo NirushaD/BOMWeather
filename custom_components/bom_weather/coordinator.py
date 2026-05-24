@@ -13,6 +13,8 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .api import BOMObservation, BOMWeatherClient, BOMWeatherError
 from .const import (
     CONF_PRODUCT_ID,
+    CONF_FORECAST_AREA,
+    CONF_FORECAST_PRODUCT_ID,
     CONF_SCAN_INTERVAL,
     CONF_STATION_ID,
     DEFAULT_SCAN_INTERVAL,
@@ -34,6 +36,8 @@ class BOMWeatherCoordinator(DataUpdateCoordinator[BOMObservation]):
             async_get_clientsession(hass),
             entry.data[CONF_PRODUCT_ID],
             entry.data[CONF_STATION_ID],
+            entry.data.get(CONF_FORECAST_PRODUCT_ID),
+            entry.data.get(CONF_FORECAST_AREA),
         )
 
         super().__init__(
@@ -48,6 +52,6 @@ class BOMWeatherCoordinator(DataUpdateCoordinator[BOMObservation]):
     async def _async_update_data(self) -> BOMObservation:
         """Fetch data from BOM."""
         try:
-            return await self.client.async_get_latest_observation()
+            return await self.client.async_get_weather_data()
         except BOMWeatherError as err:
             raise UpdateFailed(str(err)) from err
