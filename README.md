@@ -3,7 +3,7 @@
 Custom Home Assistant integration that creates a `weather` entity from Bureau of
 Meteorology real-time observation JSON feeds.
 
-Current version: `0.3.0`
+Current version: `0.4.0`
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
 
@@ -49,6 +49,13 @@ repository:
 6. Restart Home Assistant.
 7. Go to **Settings > Devices & services > Add integration** and search for
    **BOM Weather**.
+
+## Changing locations later
+
+After setup, use **Settings > Devices & services > BOM Weather > Configure** to
+edit the observation product ID, station/WMO ID, forecast product ID, and
+forecast area. Home Assistant reloads the integration after the options are
+saved.
 
 ## Integration icon
 

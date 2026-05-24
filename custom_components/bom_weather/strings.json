@@ -23,5 +23,25 @@
     "abort": {
       "already_configured": "This BOM product and station are already configured."
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "BOM Weather options",
+        "description": "Update the BOM observation station and optional daily forecast feed.",
+        "data": {
+          "product_id": "BOM product ID",
+          "station_id": "BOM station ID",
+          "forecast_product_id": "BOM forecast product ID",
+          "forecast_area": "BOM forecast area"
+        }
+      }
+    },
+    "error": {
+      "invalid_product": "Use a BOM product ID like IDN60801.",
+      "invalid_station": "Use the five digit BOM station or WMO ID.",
+      "forecast_area_required": "Enter a BOM forecast area when using a forecast product.",
+      "forecast_product_required": "Enter a BOM forecast product ID when using a forecast area."
+    }
   }
 }

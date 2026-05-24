@@ -5,7 +5,11 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-from homeassistant.components.weather import Forecast, WeatherEntity, WeatherEntityFeature
+from homeassistant.components.weather import (
+    Forecast,
+    WeatherEntity,
+    WeatherEntityFeature,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     PERCENTAGE,
@@ -20,7 +24,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers import sun as sun_helper
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import CONF_PRODUCT_ID, CONF_STATION_ID, DOMAIN
+from .const import CONF_PRODUCT_ID, CONF_STATION_ID, DOMAIN, entry_value
 from .coordinator import BOMWeatherCoordinator
 
 CONDITION_MAP = {
@@ -87,7 +91,8 @@ class BOMWeatherEntity(CoordinatorEntity[BOMWeatherCoordinator], WeatherEntity):
             identifiers={
                 (
                     DOMAIN,
-                    f"{entry.data[CONF_PRODUCT_ID]}_{entry.data[CONF_STATION_ID]}",
+                    f"{entry_value(entry, CONF_PRODUCT_ID)}_"
+                    f"{entry_value(entry, CONF_STATION_ID)}",
                 )
             },
             manufacturer="Bureau of Meteorology",

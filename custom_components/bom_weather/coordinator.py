@@ -19,6 +19,7 @@ from .const import (
     CONF_STATION_ID,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    entry_value,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -34,10 +35,10 @@ class BOMWeatherCoordinator(DataUpdateCoordinator[BOMObservation]):
         self.config_entry = entry
         self.client = BOMWeatherClient(
             async_get_clientsession(hass),
-            entry.data[CONF_PRODUCT_ID],
-            entry.data[CONF_STATION_ID],
-            entry.data.get(CONF_FORECAST_PRODUCT_ID),
-            entry.data.get(CONF_FORECAST_AREA),
+            entry_value(entry, CONF_PRODUCT_ID),
+            entry_value(entry, CONF_STATION_ID),
+            entry_value(entry, CONF_FORECAST_PRODUCT_ID),
+            entry_value(entry, CONF_FORECAST_AREA),
         )
 
         super().__init__(
@@ -45,7 +46,7 @@ class BOMWeatherCoordinator(DataUpdateCoordinator[BOMObservation]):
             logger=_LOGGER,
             name=DOMAIN,
             update_interval=timedelta(
-                minutes=entry.data.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+                minutes=entry_value(entry, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
             ),
         )
 

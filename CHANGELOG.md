@@ -8,6 +8,14 @@ This project uses semantic versioning where practical:
 - Minor version: new features or visible behavior changes.
 - Patch version: bug fixes and documentation-only updates.
 
+## 0.4.0 - 2026-05-24
+
+### Added
+
+- Added an options flow so observation product ID, station/WMO ID, forecast
+  product ID, and forecast area can be edited from the Home Assistant UI after
+  setup.
+
 ## 0.3.0 - 2026-05-24
 
 ### Added
