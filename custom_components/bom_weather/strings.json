@@ -27,8 +27,23 @@
   "options": {
     "step": {
       "init": {
+        "title": "BOM Weather region",
+        "description": "Choose the BOM region to load current station and forecast options.",
+        "data": {
+          "region": "BOM region"
+        }
+      },
+      "location": {
         "title": "BOM Weather options",
-        "description": "Update the BOM observation station and optional daily forecast feed.",
+        "description": "Choose the observation station and optional daily forecast area.",
+        "data": {
+          "station": "Observation station",
+          "forecast": "Forecast area"
+        }
+      },
+      "manual": {
+        "title": "BOM Weather options",
+        "description": "BOM discovery is unavailable. Enter the observation station and optional forecast details manually.",
         "data": {
           "product_id": "BOM product ID",
           "station_id": "BOM station ID",

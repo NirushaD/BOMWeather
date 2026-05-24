@@ -8,6 +8,17 @@ This project uses semantic versioning where practical:
 - Minor version: new features or visible behavior changes.
 - Patch version: bug fixes and documentation-only updates.
 
+## 0.5.0 - 2026-05-24
+
+### Added
+
+- Added BOM discovery for the Configure flow.
+- Added region, observation station, and forecast area dropdowns populated from
+  the current BOM website.
+- Added friendly labels such as `Laverton (94865)` while saving the required BOM
+  product and station IDs in the config entry options.
+- Added manual options fallback if BOM discovery is unavailable.
+
 ## 0.4.0 - 2026-05-24
 
 ### Added

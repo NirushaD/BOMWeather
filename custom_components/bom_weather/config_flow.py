@@ -10,6 +10,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
     CONF_PRODUCT_ID,
@@ -24,6 +25,15 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     entry_value,
+)
+from .discovery import (
+    BOMDiscoveryError,
+    FORECAST_PRODUCTS,
+    OBSERVATION_REGIONS,
+    async_get_forecast_areas,
+    async_get_observation_stations,
+    infer_region,
+    split_option_value,
 )
 
 PRODUCT_RE = re.compile(r"^ID[A-Z]\d{5}$")
@@ -108,6 +118,48 @@ def _options_schema(
     )
 
 
+def _region_schema(default_region: str) -> vol.Schema:
+    """Return the BOM region options schema."""
+    return vol.Schema(
+        {
+            vol.Required(
+                "region",
+                default=default_region,
+            ): vol.In(
+                {
+                    region: region_data[0]
+                    for region, region_data in OBSERVATION_REGIONS.items()
+                }
+            ),
+        }
+    )
+
+
+def _dropdown_options_schema(
+    station_options: dict[str, str],
+    forecast_options: dict[str, str],
+    default_station: str,
+    default_forecast: str,
+) -> vol.Schema:
+    """Return dropdown options for station and forecast area."""
+    schema: dict[Any, Any] = {
+        vol.Required(
+            "station",
+            default=default_station,
+        ): vol.In(station_options),
+    }
+
+    if forecast_options:
+        schema[
+            vol.Optional(
+                "forecast",
+                default=default_forecast,
+            )
+        ] = vol.In({"": "No forecast"} | forecast_options)
+
+    return vol.Schema(schema)
+
+
 def _validate_location_input(user_input: dict[str, Any]) -> tuple[dict[str, str], dict[str, Any]]:
     """Validate and normalise location and forecast settings."""
     errors: dict[str, str] = {}
@@ -190,11 +242,91 @@ class BOMWeatherOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialise options flow."""
         self.config_entry = config_entry
+        self._region = infer_region(
+            entry_value(config_entry, CONF_PRODUCT_ID, DEFAULT_PRODUCT_ID)
+        )
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Manage BOM Weather options."""
+        if user_input is not None:
+            self._region = user_input["region"]
+            return await self.async_step_location()
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=_region_schema(self._region),
+        )
+
+    async def async_step_location(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage station and forecast options."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            product_id, station_id = split_option_value(user_input["station"])
+            forecast_product_id = ""
+            forecast_area = ""
+            if forecast_value := user_input.get("forecast"):
+                forecast_product_id, forecast_area = split_option_value(forecast_value)
+
+            return self.async_create_entry(
+                title="",
+                data={
+                    **self.config_entry.options,
+                    CONF_PRODUCT_ID: product_id,
+                    CONF_STATION_ID: station_id,
+                    CONF_FORECAST_PRODUCT_ID: forecast_product_id,
+                    CONF_FORECAST_AREA: forecast_area,
+                },
+            )
+
+        try:
+            session = async_get_clientsession(self.hass)
+            stations = await async_get_observation_stations(session, self._region)
+            forecast_areas = await async_get_forecast_areas(session, self._region)
+        except BOMDiscoveryError:
+            return await self.async_step_manual()
+
+        station_options = {
+            station.option_value: station.option_label for station in stations
+        }
+        forecast_options = {
+            forecast_area.option_value: forecast_area.option_label
+            for forecast_area in forecast_areas
+        }
+        default_station = _default_station_option(
+            station_options,
+            entry_value(self.config_entry, CONF_PRODUCT_ID, DEFAULT_PRODUCT_ID),
+            entry_value(self.config_entry, CONF_STATION_ID, ""),
+        )
+        default_forecast = _default_forecast_option(
+            forecast_options,
+            entry_value(
+                self.config_entry,
+                CONF_FORECAST_PRODUCT_ID,
+                FORECAST_PRODUCTS.get(self._region, ""),
+            ),
+            entry_value(self.config_entry, CONF_FORECAST_AREA, ""),
+        )
+
+        return self.async_show_form(
+            step_id="location",
+            data_schema=_dropdown_options_schema(
+                station_options,
+                forecast_options,
+                default_station,
+                default_forecast,
+            ),
+            errors=errors,
+        )
+
+    async def async_step_manual(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage options with manual fields when BOM discovery is unavailable."""
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -215,7 +347,31 @@ class BOMWeatherOptionsFlow(config_entries.OptionsFlow):
             }
 
         return self.async_show_form(
-            step_id="init",
+            step_id="manual",
             data_schema=_options_schema(self.config_entry, user_input),
             errors=errors,
         )
+
+
+def _default_station_option(
+    station_options: dict[str, str],
+    product_id: str,
+    station_id: str,
+) -> str:
+    """Return the default station select value."""
+    value = f"{product_id}|{station_id}"
+    if value in station_options:
+        return value
+    return next(iter(station_options))
+
+
+def _default_forecast_option(
+    forecast_options: dict[str, str],
+    product_id: str,
+    forecast_area: str,
+) -> str:
+    """Return the default forecast select value."""
+    value = f"{product_id}|{forecast_area}"
+    if value in forecast_options:
+        return value
+    return ""
